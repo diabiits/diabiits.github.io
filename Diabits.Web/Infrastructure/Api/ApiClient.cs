@@ -7,25 +7,19 @@ namespace Diabits.Web.Infrastructure.Api;
 /// <summary>
 /// Generic API client that handles all HTTP communication. Automatically includes JWT tokens via AuthorizationHandler.
 /// </summary>
-public class ApiClient
+public class ApiClient(HttpClient http)
 {
-    private readonly HttpClient _http;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
 
-    public ApiClient(HttpClient http)
-    {
-        _http = http;
-    }
-
     public async Task<ApiResult<T>> GetAsync<T>(string endpoint, CancellationToken ct = default)
     {
         try
         {
-            var response = await _http.GetAsync(endpoint, ct);
+            var response = await http.GetAsync(endpoint, ct);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -46,7 +40,7 @@ public class ApiClient
     {
         try
         {
-            var response = await _http.PostAsJsonAsync(endpoint, request, JsonOptions, ct);
+            var response = await http.PostAsJsonAsync(endpoint, request, JsonOptions, ct);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -67,7 +61,7 @@ public class ApiClient
     {
         try
         {
-            var response = await _http.PutAsJsonAsync(endpoint, request, JsonOptions, ct);
+            var response = await http.PutAsJsonAsync(endpoint, request, JsonOptions, ct);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -91,7 +85,7 @@ public class ApiClient
     {
         try
         {
-            var response = await _http.DeleteAsync(endpoint, ct);
+            var response = await http.DeleteAsync(endpoint, ct);
 
             if (!response.IsSuccessStatusCode)
             {

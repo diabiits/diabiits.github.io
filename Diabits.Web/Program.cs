@@ -64,10 +64,11 @@ builder.Services.AddApexCharts(e =>
     };
 });
 
-builder.Services.AddSingleton<JwtAuthStateProvider>();
-builder.Services.AddSingleton<AuthenticationStateProvider>(sp => sp.GetRequiredService<JwtAuthStateProvider>());
-builder.Services.AddSingleton<TokenStorage>();
+builder.Services.AddScoped<JwtAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<JwtAuthStateProvider>());
+builder.Services.AddScoped<SessionStorage>();
 builder.Services.AddScoped<AuthService>();
+
 builder.Services.AddScoped<InviteService>();
 builder.Services.AddScoped<HealthDataService>();
 builder.Services.AddScoped<DashboardService>();
