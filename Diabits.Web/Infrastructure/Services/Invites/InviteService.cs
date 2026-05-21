@@ -7,32 +7,16 @@ namespace Diabits.Web.Infrastructure.Services.Invites;
 /// <summary>
 /// Handles authentication business logic and state management.
 /// </summary>
-public class InviteService
+public class InviteService(ApiClient apiClient)
 {
-    private readonly ApiClient _apiClient;
-
-    public InviteService(ApiClient apiClient)
-    {
-        _apiClient = apiClient;
-    }
-
     public async Task<List<Invite>> GetInvitesAsync()
     {
-        var result = await _apiClient.GetAsync<List<Invite>>("Invite");
-
-        if (!result.IsSuccess)
-            throw new InvalidOperationException(result.Error ?? "Something went wrong while getting invites");
-
-        return result.Data?.ToList() ?? new List<Invite>();
+        return await apiClient.GetAsync<List<Invite>>("Invite") ?? [];
     }
 
     public async Task<Invite> CreateInviteAsync(string email)
     {
-        var result = await _apiClient.PostAsync<Invite>("Invite", new InviteRequest(email));
-
-        if (result.Data == null)
-            throw new HttpRequestException(result.Error ?? "Something went wrong while creating invite");
-
-        return result.Data;
+        return await apiClient.PostAsync<InviteRequest, Invite>("Invite", new InviteRequest(email)) 
+            ?? throw new HttpRequestException("Something went wrong while creating invite");
     }
 }

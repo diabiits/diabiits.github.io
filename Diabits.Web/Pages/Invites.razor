@@ -69,7 +69,7 @@
             var invites = await InviteService.GetInvitesAsync();
             InviteList = new ObservableCollection<Invite>(invites);
         }
-        catch (InvalidOperationException ex)
+        catch (HttpRequestException ex)
         {
             Snackbar.Add(ex.Message, Severity.Error);
         }

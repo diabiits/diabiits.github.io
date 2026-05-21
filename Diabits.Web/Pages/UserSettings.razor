@@ -142,19 +142,14 @@
 
         try
         {
-            var result = await AuthService.UpdateCredentialsAsync(
+            await AuthService.UpdateCredentialsAsync(
                 currentPassword,
                 HasUsernameChange ? _model.NewUsername : null,
                 HasPasswordChange ? _model.NewPassword : null
             );
 
-            if (!result.Ok)
-            {
-                Snackbar.Add(result.Error ?? "Failed to update account.", Severity.Error);
-                return;
-            }
-
             var changes = new List<string>();
+
             if (HasUsernameChange) changes.Add("username");
             if (HasPasswordChange) changes.Add("password");
 
@@ -171,6 +166,10 @@
                 _form.ResetValidation();
                 await _form.Validate();
             }            
+        }
+        catch (HttpRequestException ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
         }
         catch
         {

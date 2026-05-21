@@ -62,29 +62,32 @@
 
     private async Task SubmitAsync()
     {
-        if (_busy || _form == null) return;
+        if (_busy || _form == null)
+            return;
 
         await _form.Validate();
-        if (!_form.IsValid) return;
+
+        if (!_form.IsValid)
+            return;
 
         _busy = true;
+
         await InvokeAsync(StateHasChanged);
 
         try
         {
-            var result = await AuthService.LoginAsync(_model.Username, _model.Password);
+            await AuthService.LoginAsync(_model.Username, _model.Password);
 
-            if (!result.Ok)
-            {
-                Snackbar.Add(result.Error ?? "Login failed.", Severity.Error);
-                return;
-            }
-
-            Nav.NavigateTo("/", replace: true);
+            //TODO Any need to navigate?
+            Nav.NavigateTo("", replace: true);
+        }
+        catch (HttpRequestException ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
         }
         catch
         {
-            Snackbar.Add("Backend unavailable. Try again.", Severity.Error);
+            Snackbar.Add("Backend unavailable. Try again later.", Severity.Error);
         }
         finally
         {
@@ -96,7 +99,7 @@
     private async void HandleKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
-            await SubmitAsync();        
+            await SubmitAsync();
     }
 
     private class LoginModel

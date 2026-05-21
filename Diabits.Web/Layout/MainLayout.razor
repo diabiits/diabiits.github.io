@@ -1,19 +1,12 @@
 ﻿@inherits LayoutComponentBase
-@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
-@using System.Security.Claims
 @inject AuthService AuthService
 @inject NavigationManager Nav
 @inject AuthenticationStateProvider AuthStateProvider
 
-@* Required *@
 <MudThemeProvider Theme="@CustomTheme.DiabitsTheme" />
 <MudPopoverProvider />
-
-@* Needed for dialogs *@
 <MudDialogProvider />
-
-@* Needed for snackbars *@
 <MudSnackbarProvider />
 
 <MudLayout Class="d-flex flex-column flex-grow-1 vh-100">
@@ -21,11 +14,13 @@
         <MudLink Href="" Underline="Underline.None" Class="d-flex h-100 py-2">
             <MudImage Src="assets/wordmark_white.png" Alt="Diabits wordmark" />
         </MudLink>
+
         <MudSpacer />
-        @if (_isAdmin)
-        {
+
+        <AuthorizeView Roles="Admin"> 
             <MudIconButton Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("invites"))" />
-        }
+        </AuthorizeView>
+
         <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("settings"))" />
         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" OnClick="LogoutAsync" />
     </MudAppBar>
@@ -36,14 +31,6 @@
 
 
 @code {
-    private bool _isAdmin;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        _isAdmin = authState.User.IsInRole("Admin");
-    }
-
     private async Task LogoutAsync()
     {
         await AuthService.LogoutAsync();

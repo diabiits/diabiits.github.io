@@ -4,7 +4,7 @@ using Diabits.Web;
 using Diabits.Web.Infrastructure.Api;
 using Diabits.Web.Infrastructure.Services.Auth;
 using Diabits.Web.Infrastructure.Services.Dashboard;
-using Diabits.Web.Infrastructure.Services.HealthData;
+//using Diabits.Web.Infrastructure.Services.HealthData;
 using Diabits.Web.Infrastructure.Services.Invites;
 
 using Microsoft.AspNetCore.Components.Authorization;
@@ -64,12 +64,13 @@ builder.Services.AddApexCharts(e =>
     };
 });
 
-builder.Services.AddSingleton<JwtAuthStateProvider>();
-builder.Services.AddSingleton<AuthenticationStateProvider>(sp => sp.GetRequiredService<JwtAuthStateProvider>());
-builder.Services.AddSingleton<TokenStorage>();
+builder.Services.AddScoped<JwtAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<JwtAuthStateProvider>());
+builder.Services.AddScoped<SessionStorage>();
 builder.Services.AddScoped<AuthService>();
+
 builder.Services.AddScoped<InviteService>();
-builder.Services.AddScoped<HealthDataService>();
+//builder.Services.AddScoped<HealthDataService>();
 builder.Services.AddScoped<DashboardService>();
 
 builder.Services.AddScoped<AuthorizationHandler>();
