@@ -76,7 +76,8 @@ builder.Services.AddScoped<AuthorizationHandler>();
 
 builder.Services.AddHttpClient<ApiClient>(client =>
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"]!);
+    //TODO Fix hardcoded URL
+    client.BaseAddress = new Uri(builder.Configuration["ApiBaseUrl"] ?? "https://diabits-api-fsgmd3fuh9c9evfe.swedencentral-01.azurewebsites.net");
 })
 .AddHttpMessageHandler<AuthorizationHandler>(); // Automatically adds JWT to all requests
 
