@@ -5,18 +5,19 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
+        //TODO Dobbeltkonfekt? MainLayout
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var isAuthenticated = authState.User.Identity?.IsAuthenticated == true;
 
         if (isAuthenticated)
         {
             // User is authenticated, redirect to home
-            Nav.NavigateTo("/", replace: true);
+            Nav.NavigateTo("", replace: true);
         }
         else
         {
             // User is not authenticated, redirect to login
-            Nav.NavigateTo("/login", replace: true);
+            Nav.NavigateTo("login", replace: true);
         }
     }
 }
