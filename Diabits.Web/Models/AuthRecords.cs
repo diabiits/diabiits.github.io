@@ -1,5 +1,6 @@
 ﻿namespace Diabits.Web.Models;
 
+//TODO Model? Move to DTO
 public record AuthResponse(string AccessToken);
 
 public record AuthResult(bool Ok, string? Error)
