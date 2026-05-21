@@ -9,19 +9,14 @@ namespace Diabits.Web.Infrastructure.Services.Auth;
 /// </summary>
 public class AuthService(ApiClient apiClient, JwtAuthStateProvider authStateProvider)
 {
-    public async Task<AuthResult> LoginAsync(string username, string password)
+    public async Task LoginAsync(string username, string password)
     {
-        var result = await apiClient.PostAsync<AuthResponse>("Auth/login", new LoginRequest(username, password));
+        var response = await apiClient.PostAsync<LoginRequest, AuthResponse>("Auth/login", new LoginRequest(username, password));
 
-        if (!result.IsSuccess)
-            return AuthResult.Fail(result.Error ?? "Login failed");
+        if (response?.AccessToken == null)
+            throw new HttpRequestException("Invalid response from server");
 
-        if (result.Data?.AccessToken == null)
-            return AuthResult.Fail("Invalid response from server");
-
-        await authStateProvider.SetSessionAsync(result.Data.AccessToken);
-
-        return AuthResult.Success();
+        await authStateProvider.SetSessionAsync(response.AccessToken);
     }
 
     public async Task LogoutAsync()
@@ -30,18 +25,13 @@ public class AuthService(ApiClient apiClient, JwtAuthStateProvider authStateProv
         // TODO: Call backend logout endpoint when implementing refresh tokens
     }
 
-    public async Task<AuthResult> UpdateCredentialsAsync(string currentPassword, string? newUsername = null, string? newPassword = null)
+    public async Task UpdateCredentialsAsync(string currentPassword, string? newUsername = null, string? newPassword = null)
     {
-        var result = await apiClient.PutAsync<AuthResponse>("Auth/UpdateCredentials", new UpdateAccountRequest(currentPassword, newUsername, newPassword));
+        var response = await apiClient.PutAsync<UpdateAccountRequest, AuthResponse>("Auth/UpdateCredentials", new UpdateAccountRequest(currentPassword, newUsername, newPassword));
 
-        if (!result.IsSuccess)
-            return AuthResult.Fail(result.Error ?? "Update failed");
+        if (response?.AccessToken == null)
+            throw new HttpRequestException("Invalid response from server");
 
-        if (result.Data?.AccessToken == null)
-            return AuthResult.Fail("Invalid response from server");
-
-        await authStateProvider.SetSessionAsync(result.Data.AccessToken);
-
-        return AuthResult.Success();
+        await authStateProvider.SetSessionAsync(response.AccessToken);
     }
 }

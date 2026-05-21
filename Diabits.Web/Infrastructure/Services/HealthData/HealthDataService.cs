@@ -1,34 +1,21 @@
-﻿using Diabits.Web.DTOs;
-using Diabits.Web.Infrastructure.Api;
+﻿//using Diabits.Web.DTOs;
+//using Diabits.Web.Infrastructure.Api;
 
-using MudBlazor.Extensions;
+//namespace Diabits.Web.Infrastructure.Services.HealthData;
 
-namespace Diabits.Web.Infrastructure.Services.HealthData;
+//public class HealthDataService(ApiClient apiClient)
+//{
+//    public async Task<HealthDataResponse> GetHealthDataAsync(DateTime startDate, DateTime endDate)
+//    {
+//        var start = startDate.ToString("yyyy-MM-ddTHH:mm:ss");
+//        var end = endDate.ToString("yyyy-MM-ddTHH:mm:ss");
+//        var response = await apiClient.GetAsync<HealthDataResponse>($"HealthData?startDate={start}&endDate={end}");
 
-public class HealthDataService
-{
-    private readonly ApiClient _apiClient;
-    public HealthDataService(ApiClient apiClient)
-    {
-        _apiClient = apiClient;
-    }
+//        if (response.Data == null ) //TODO Refactor
+//        { 
+//            throw new HttpRequestException(response.Error ?? "No data found"); 
+//        }   
 
-    public async Task<HealthDataResponse> GetHealthDataAsync(DateTime startDate, DateTime endDate)
-    {
-        var start = startDate.ToString("yyyy-MM-ddTHH:mm:ss");
-        var end = endDate.ToString("yyyy-MM-ddTHH:mm:ss");
-        var result = await _apiClient.GetAsync<HealthDataResponse>($"HealthData?startDate={start}&endDate={end}");
-
-        if (!result.IsSuccess)
-        {
-            throw new HttpRequestException(result.Error ?? "Something went wrong while getting data");
-        }
-
-        if (result.Data == null ) //TODO Refactor
-        { 
-            throw new HttpRequestException(result.Error ?? "No data found"); 
-        }   
-
-        return result.Data;
-    }
-}
+//        return response.Data;
+//    }
+//}

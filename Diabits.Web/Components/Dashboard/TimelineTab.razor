@@ -1,4 +1,5 @@
 @using ApexCharts
+@using Diabits.Web.Models
 @inject DashboardService DashboardService
 @inject ISnackbar Snackbar
 
@@ -260,16 +261,5 @@
             Intersect = false,
             X = new TooltipX { Show = false }
         }
-    };
-    // TODO Move 
-    public record TimelineChartResponse(List<TimelineSeries> Series);
-    public record TimelineSeries(string Name, TimelineSeriesType Type, List<TimelinePoint> Points);
-    public record TimelinePoint(DateTime Time, double? Value, string? Name = null);
-
-    public enum TimelineSeriesType
-    {
-        Line,
-        Area,
-        Scatter
-    }
+    }; 
 }
