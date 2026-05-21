@@ -18,15 +18,15 @@
 
 <MudLayout Class="d-flex flex-column flex-grow-1 vh-100">
     <MudAppBar Elevation="1">
-        <MudLink Href="/" Underline="Underline.None" Class="d-flex h-100 py-2">
+        <MudLink Href="" Underline="Underline.None" Class="d-flex h-100 py-2">
             <MudImage Src="assets/wordmark_white.png" Alt="Diabits wordmark" />
         </MudLink>
         <MudSpacer />
         @if (_isAdmin)
         {
-            <MudIconButton Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("/invites"))" />
+            <MudIconButton Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("invites"))" />
         }
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("/settings"))" />
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("settings"))" />
         <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" OnClick="LogoutAsync" />
     </MudAppBar>
     <MudMainContent Class="d-flex flex-grow-1">
@@ -47,6 +47,6 @@
     private async Task LogoutAsync()
     {
         await AuthService.LogoutAsync();
-        Nav.NavigateTo("/login");
+        Nav.NavigateTo("login");
     }
 }
