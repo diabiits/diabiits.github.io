@@ -16,13 +16,14 @@
         </MudLink>
 
         <MudSpacer />
+        <AuthorizeView Authorized>
+            <AuthorizeView Roles="Admin">
+                <MudIconButton Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("invites"))" />
+            </AuthorizeView>
 
-        <AuthorizeView Roles="Admin"> 
-            <MudIconButton Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("invites"))" />
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("settings"))" />
+            <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" OnClick="LogoutAsync" />
         </AuthorizeView>
-
-        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("settings"))" />
-        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" OnClick="LogoutAsync" />
     </MudAppBar>
     <MudMainContent Class="d-flex flex-grow-1">
         @Body
