@@ -1,33 +1,43 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
-
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Diabits.Web.Infrastructure.Services.Auth;
 
 //TODO Implement dialog that asks user to log back in when access token expires
-public class JwtAuthStateProvider(TokenStorage tokens) : AuthenticationStateProvider
+public class JwtAuthStateProvider(SessionStorage storage) : AuthenticationStateProvider
 {
     private static readonly ClaimsPrincipal Anonymous = new(new ClaimsIdentity());
-    private static readonly JwtSecurityTokenHandler TokenHandler = new();
+    //TODO move to constants class
+    private const string Key = "diabits_accesstoken";
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var session = await tokens.LoadAsync();
-        if (session is null)
+        var accessToken = await storage.LoadAsync<string>(Key);
+
+        if (accessToken is null)
             return new AuthenticationState(Anonymous);
 
-        var token = TokenHandler.ReadJwtToken(session.AccessToken);
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(accessToken);
+
         if (token.ValidTo < DateTime.UtcNow)
         {
-            await tokens.ClearAsync();
+            await storage.ClearAsync(Key);
             return new AuthenticationState(Anonymous);
         }
 
         var identity = new ClaimsIdentity(token.Claims, authenticationType: "jwt");
         return new AuthenticationState(new ClaimsPrincipal(identity));
     }
-
-    public void NotifyAuthStateChanged() =>
+    public async Task SetSessionAsync(string accessToken)
+    {
+        await storage.SaveAsync(Key, accessToken);
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+    }
+
+    public async Task ClearSessionAsync()
+    {
+        await storage.ClearAsync(Key);
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+    }
 }
