@@ -3,6 +3,8 @@
 @inject AuthService AuthService
 @inject NavigationManager Nav
 @inject AuthenticationStateProvider AuthStateProvider
+@inject IDialogService DialogService
+
 
 <MudThemeProvider Theme="@CustomTheme.DiabitsTheme" />
 <MudPopoverProvider />
@@ -23,6 +25,7 @@
                 {
                     <MudIconButton Icon="@Icons.Material.Filled.AdminPanelSettings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("invites"))" />
                 }
+                <MudIconButton Icon="@Icons.Material.Filled.CloudUpload" Color="Color.Inherit" OnClick="ShowUploadDialog" />
                 <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="@(() => Nav.NavigateTo("settings"))" />
                 <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Inherit" OnClick="LogoutAsync" />
             </Authorized>
@@ -39,5 +42,17 @@
     {
         await AuthService.LogoutAsync();
         Nav.NavigateTo("login");
+    }
+
+    private async Task ShowUploadDialog()
+    {
+        var dialog = await DialogService.ShowAsync<UploadDialog>(
+            "Upload Glooko Data",
+            new DialogOptions
+            {
+                MaxWidth = MaxWidth.Large,
+                FullWidth = true,
+                CloseButton = true
+            });
     }
 }

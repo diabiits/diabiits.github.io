@@ -1,8 +1,11 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using Diabits.Web.Infrastructure.Services.Auth;
+
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace Diabits.Web.Infrastructure.Api;
 
@@ -50,6 +53,24 @@ public class ApiClient(HttpClient http, JwtAuthStateProvider authProvider)
         await EnsureSuccessAsync(response, ct);
     }
 
+    // TODO Send file or json?
+    public async Task PostFileAsync(string endpoint, IBrowserFile file, CancellationToken ct = default)
+    {
+        using var content = new MultipartFormDataContent();
+
+        await using var stream = file.OpenReadStream(maxAllowedSize: 20 * 1024 * 1024, cancellationToken: ct);
+
+        using var streamContent = new StreamContent(stream);
+
+        streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+
+        content.Add(streamContent, "file", file.Name);
+
+        var response = await http.PostAsync(endpoint, content, ct);
+
+        await EnsureSuccessAsync(response, ct);
+    }
+
     private async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken ct)
     {
         if (response.IsSuccessStatusCode)
@@ -76,5 +97,5 @@ public class ApiClient(HttpClient http, JwtAuthStateProvider authProvider)
         {
             return "Request failed";
         }
-    }
+    }  
 }
