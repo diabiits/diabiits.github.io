@@ -23,14 +23,14 @@
                     <MudTextField T="string"
                                   Value="_model.Email"
                                   Label="Email"
-                                  Variant="Variant.Outlined"
+                                  Variant="MudBlazor.Variant.Outlined"
                                   Disabled
                                   HelperText="Email cannot be changed" />
 
                     <MudTextField T="string"
                                   @bind-Value="_model.NewUsername"
                                   Label="Username"
-                                  Variant="Variant.Outlined"
+                                  Variant="MudBlazor.Variant.Outlined"
                                   Placeholder="@_model.CurrentUsername"
                                   Clearable
                                   ClearIcon="@Icons.Material.Filled.Undo"
@@ -42,7 +42,7 @@
                                   @bind-Value="_model.NewPassword"
                                   Label="New Password"
                                   ShrinkLabel
-                                  Variant="Variant.Outlined"
+                                  Variant="MudBlazor.Variant.Outlined"
                                   InputType="@(_passwordHidden ? InputType.Password : InputType.Text)"
                                   Clearable
                                   HelperText="Leave blank to keep current password"
@@ -55,7 +55,7 @@
 
                     <MudStack Row Spacing="2" Class="mt-4">
                         <MudButton FullWidth
-                                   Variant="Variant.Filled"
+                                   Variant="MudBlazor.Variant.Filled"
                                    Color="Color.Secondary"
                                    Disabled="@(!CanSave)"
                                    OnClick="@ShowConfirmationDialog">
@@ -71,7 +71,7 @@
                         </MudButton>
 
                         <MudButton FullWidth
-                                   Variant="Variant.Outlined"
+                                   Variant="MudBlazor.Variant.Outlined"
                                    Color="Color.Secondary"
                                    Disabled="@_busy"
                                    OnClick="@Cancel">
@@ -163,8 +163,8 @@
 
             if (_form != null)
             {
-                _form.ResetValidation();
-                await _form.Validate();
+                await _form.ResetValidationAsync();
+                await _form.ValidateAsync();
             }            
         }
         catch (HttpRequestException ex)

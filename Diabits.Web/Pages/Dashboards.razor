@@ -4,10 +4,11 @@
 @using Diabits.Web.Components.Dashboard
 
 @* TODO Fix datepicker *@
+@* TODO Stop flash on picking of datatypes  *@
 <PageTitle>Dashboard</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.False" Gutters="false" Class="d-flex flex-column flex-grow-1" Style="max-height: 100vh - 64px;">
-    <MudTabs @bind-ActivePanelIndex="_activeTabIndex" Elevation="2" PanelClass="pa-6 d-flex" TabHeaderClass="pr-4" Class="d-flex flex-grow-1" SliderColor="MudBlazor.Color.Secondary" EnableDragAndDrop Ripple Border Rounded ApplyEffectsToContainer KeepPanelsAlive>
+<MudContainer MaxWidth="MaxWidth.False" Gutters="false" Class="d-flex flex-column flex-grow-1">
+    <MudTabs @bind-ActivePanelIndex="_activeTabIndex" Elevation="2" TabPanelsClass="pa-6 d-flex" TabHeaderClass="pr-4" Class="d-flex flex-grow-1" SliderColor="MudBlazor.Color.Secondary" EnableDragAndDrop Ripple Border Rounded ApplyEffectsToContainer KeepPanelsAlive>
         <Header>
             <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="d-flex align-self-center">
                 <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft"

@@ -1,0 +1,67 @@
+﻿@inject ISnackbar Snackbar
+@inject ApiClient ApiClient
+
+<MudDialog>
+    <DialogContent>
+        <MudFileUpload T="IBrowserFile" @bind-Files="_uploadFile" Class="w-100 p-4">
+            <CustomContent>
+                <MudButtonGroup Color="Color.Secondary" Variant="Variant.Filled" Class="mud-width-full">
+                    <MudButton Variant="Variant.Filled" OnClick="@context.OpenFilePickerAsync" Style="min-width: 150px;" Disabled="_uploading">
+                        Choose file
+                    </MudButton>
+                    <MudPaper Class="mud-width-full flex-wrap d-flex align-center justify-center mud-border-secondary mud-text-secondary" Outlined Square>
+                        @if (_uploading)
+                        {
+                            <MudProgressLinear Indeterminate="true" Color="Color.Tertiary" Class="h-100" />
+                        }
+                        else
+                        {
+                            @(_uploadFile?.Name ?? "No file selected")
+                        }
+                    </MudPaper>
+                    <MudButton Variant="Variant.Filled" OnClick="@Upload" Disabled="_uploading || _uploadFile is null">
+                        Upload
+                    </MudButton>
+                </MudButtonGroup>
+            </CustomContent>
+            <SelectedTemplate />
+        </MudFileUpload>
+
+    </DialogContent>
+</MudDialog>
+
+
+
+@code {
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+
+    private bool _uploading;
+    private IBrowserFile? _uploadFile;
+
+    public async Task Upload()
+    {
+        if (_uploadFile is null)
+            return;
+
+        _uploading = true;
+
+        //TODO Move to service
+        //TODO Figure out importresult
+        try
+        {
+            await ApiClient.PostFileAsync("healthdata/imports/glooko", _uploadFile);
+
+            Snackbar.Add("File uploaded", Severity.Success);
+
+            MudDialog?.Close();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            _uploading = false;
+        }
+    }
+}
