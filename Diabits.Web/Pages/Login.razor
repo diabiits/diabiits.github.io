@@ -6,7 +6,7 @@
 @inject ISnackbar Snackbar
 
 <MudPaper Elevation="4" Class="pa-4 pa-sm-6 mt-8 mx-4" Style="width: 100%; max-width: 400px; border-radius:16px;">
-    <MudStack Class="my-8" Spacing="2" AlignItems="AlignItems.Center">
+    <MudStack Class="my-8" Spacing="2" AlignItems="MudBlazor.AlignItems.Center">
         <MudImage Src="assets/wordmark_red.png" Alt="Diabits wordmark" Fluid />
         <MudText Typo="Typo.h6">
             Connecting the Dots
@@ -65,7 +65,7 @@
         if (_busy || _form == null)
             return;
 
-        await _form.Validate();
+        await _form.ValidateAsync();
 
         if (!_form.IsValid)
             return;

@@ -9,7 +9,7 @@
                 <MudTextField T="string"
                               Label="Email"
                               @bind-Value="_email"
-                              Variant="Variant.Outlined"
+                              Variant="MudBlazor.Variant.Outlined"
                               Required="true"
                               RequiredError="Email is required"
                               Validation="@(new Func<string, IEnumerable<string>>(EmailValidator))"
@@ -19,12 +19,12 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="@CreateInvite"
-                   Color="Color.Secondary"
+                   Color="MudBlazor.Color.Secondary"
                    Variant="Variant.Filled"
                    Disabled="@(_busy || !_isValid)">
             @if (_busy)
             {
-                <MudProgressCircular Indeterminate Size="Size.Small" Class="mr-2" />
+                <MudProgressCircular Indeterminate Size="MudBlazor.Size.Small" Class="mr-2" />
                 <MudText Class="ms-2">Creating...</MudText>
             }
             else
@@ -32,7 +32,7 @@
                 <MudText>Create Invite</MudText>
             }
         </MudButton>
-        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="Cancel" Disabled="@_busy">Cancel</MudButton>
+        <MudButton Color="MudBlazor.Color.Secondary" Variant="MudBlazor.Variant.Outlined" OnClick="Cancel" Disabled="@_busy">Cancel</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -55,7 +55,7 @@
     {
         if (_form is null) return;
 
-        await _form.Validate();
+        await _form.ValidateAsync();
         if (!_isValid) return;
 
         try

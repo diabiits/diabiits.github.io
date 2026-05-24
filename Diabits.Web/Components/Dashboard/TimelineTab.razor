@@ -11,7 +11,7 @@
     else if (_timeline != null && HasData())
     {
         @* TODO Show weekday in date *@
-        <MudContainer MaxWidth="MaxWidth.False" Gutters="false" Class="pa-2">
+        <MudContainer MaxWidth="MudBlazor.MaxWidth.False" Gutters="false" Class="pa-2">
             <ApexChart TItem="TimelinePoint"
                        @key="@($"timeline-{SelectedDate:yyyyMMdd}")"
                        Options="_chartOptions">
@@ -39,7 +39,7 @@
                         if (rows.Count == 0) return;
                     }
                     <MudPaper Elevation="0" Class="pa-3" Style="min-width: 190px;">
-                        <MudText Typo="Typo.subtitle2"
+                        <MudText Typo="MudBlazor.Typo.subtitle2"
                                  Class="mb-2 pb-2"
                                  Style="font-weight:600; border-bottom: 1px solid var(--mud-palette-lines-default);">
                             @time.ToString("HH:mm")
