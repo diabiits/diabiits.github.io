@@ -8,5 +8,6 @@ public enum TimelineSeriesType
 {
     Line,
     Area,
-    Scatter
+    Scatter,
+    Bar
 }
