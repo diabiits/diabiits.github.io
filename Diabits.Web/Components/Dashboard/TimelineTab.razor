@@ -104,7 +104,7 @@
     private Dictionary<DateTime, Dictionary<string, TimelinePoint>> _byTime = new();
     private DateTime? _lastLoadedDate;
 
-    private static readonly string[] SeriesOrder = { "Menstruation", "Sleep", "Workout", "Heart Rate", "Medication", "Insulin Bolus", "Glucose" };
+    private static readonly string[] SeriesOrder = { "Menstruation", "Sleep", "Workout", "Heart Rate", "Medication", "Insulin Bolus", "Glucose Level" };
     private static readonly IReadOnlyDictionary<string, string> SeriesColor = new Dictionary<string, string>
     {
         ["Menstruation"] = "#9da4a8",
@@ -112,7 +112,7 @@
         ["Workout"] = "#D4C9D8",
         ["Heart Rate"] = "#e27396",
         ["Medication"] = "#47565f",
-        ["Glucose"] = "#AC0000",
+        ["Glucose Level"] = "#AC0000",
         ["Insulin Bolus"] = "#670000"
     };
     private static string GetSeriesColor(string seriesName) => SeriesColor.TryGetValue(seriesName, out var c) ? c : "var(--mud-palette-text-secondary)";
@@ -248,7 +248,7 @@
                 Max = 25,
                 DecimalsInFloat = 1,
                 Title = new AxisTitle { Text = "Glucose Level (mmol/L)" },
-                SeriesName = "Glucose"
+                SeriesName = "Glucose Level"
             }
         },
         Stroke = new Stroke
