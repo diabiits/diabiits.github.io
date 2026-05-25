@@ -17,57 +17,12 @@
                     @{
                         var hovered = context.DataPoint.Items.FirstOrDefault() as TimelinePoint;
                         if (hovered is null) return;
-
-                        var time = hovered.Time;
-
-                        bool Active(TimelinePoint? p) => (p?.Value ?? 0) > 0;
-                        bool HasValue(TimelinePoint? p) => p?.Value is not null;
-
-                        var rows = OrderedSeries()
-                                    .Select(s => new { s.Name, s.Type, Point = At(time, s.Name) })
-                                    .Where(x => x.Point is not null)
-                                    .Where(r =>
-                                        r.Type is TimelineSeriesType.Line or TimelineSeriesType.Scatter or TimelineSeriesType.Bar
-                                        ? HasValue(r.Point)
-                                        : Active(r.Point)
-                                    )
-                                    .ToList();
-
-                        if (rows.Count == 0) return;
                     }
-                    <MudPaper Elevation="0" Class="pa-3" Style="min-width: 190px;">
-                        <MudText Typo="MudBlazor.Typo.subtitle2"
-                                 Class="mb-2 pb-2"
-                                 Style="font-weight:600; border-bottom: 1px solid var(--mud-palette-lines-default);">
-                            @time.ToString("HH:mm")
-                        </MudText>
-
-                        <MudStack Spacing="1">
-                            @foreach (var r in rows)
-                            {
-                                var p = r.Point!;
-
-                                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-                                        <span style="
-                                            width:10px;height:10px;border-radius:999px;
-                                            background:@GetSeriesColor(r.Name);
-                                            display:inline-block;
-                                            box-shadow: 0 0 0 1px var(--mud-palette-lines-default) inset;">
-                                        </span>
-
-                                        <MudText Typo="Typo.body2" Style="font-weight:600">@r.Name</MudText>
-                                    </MudStack>
-
-                                    <MudText Typo="Typo.body2">@(p.Name ?? "Active")</MudText>
-                                </MudStack>
-                            }
-                        </MudStack>
-                    </MudPaper>
+                    <TimelineTooltip Series ="_orderedSeries" GetPoint="GetPoint" Time="hovered.Time" />
                 </ApexPointTooltip>
 
                 <ChildContent>
-                    @foreach (var s in OrderedSeries())
+                    @foreach (var s in _orderedSeries)
                     {
                         <ApexPointSeries TItem="TimelinePoint"
                                          Items="s.Points"
@@ -77,7 +32,6 @@
                                          YValue="p => (decimal?)p.Value" />
                     }
                 </ChildContent>
-
             </ApexChart>
         </MudContainer>
     }
@@ -90,34 +44,22 @@
     }
 </MudPaper>
 
-    @code {
+@code {
     [Parameter]
     public DateTime? SelectedDate { get; set; }
 
     [Parameter]
-    public bool IsActive { get; set; }
+    public bool IsActiveTab { get; set; }
 
     private TimelineChartResponse? _timeline;
-    private Dictionary<DateTime, Dictionary<string, TimelinePoint>> _byTime = new();
-
+    private Dictionary<DateTime, Dictionary<string, TimelinePoint>> _pointsByTime = new();
+    private List<TimelineSeries> _orderedSeries = [];
     private DateTime? _lastLoadedDate;
-
-    private static readonly string[] SeriesOrder = { "Menstruation", "Sleep", "Workout", "Heart Rate", "Medication", "Insulin Bolus", "Glucose Level" };
-    private static readonly IReadOnlyDictionary<string, string> SeriesColor = new Dictionary<string, string>
-    {
-        ["Menstruation"] = "#9da4a8",
-        ["Sleep"] = "#91B3C9",
-        ["Workout"] = "#D4C9D8",
-        ["Heart Rate"] = "#e27396",
-        ["Medication"] = "#47565f",
-        ["Glucose Level"] = "#AC0000",
-        ["Insulin Bolus"] = "#670000"
-    };
-    private static string GetSeriesColor(string seriesName) => SeriesColor.TryGetValue(seriesName, out var c) ? c : "var(--mud-palette-text-secondary)";
+    private static readonly string[] _seriesOrder = { "Menstruation", "Sleep", "Workout", "Heart Rate", "Medication", "Insulin Bolus", "Glucose Level" };
 
     protected override async Task OnParametersSetAsync()
     {
-        if (IsActive && SelectedDate.HasValue && SelectedDate != _lastLoadedDate)
+        if (IsActiveTab && SelectedDate.HasValue && SelectedDate != _lastLoadedDate)
         {
             _lastLoadedDate = SelectedDate;
             await LoadTimelineDataAsync();
@@ -134,17 +76,26 @@
         try
         {
             _timeline = await DashboardService.GetTimelineAsync(SelectedDate.Value.Date);
-            BuildLookup();
+
+            _orderedSeries = _timeline.Series
+                .OrderBy(s =>
+                    {
+                        var i = Array.IndexOf(_seriesOrder, s.Name);
+                        return i == -1 ? int.MaxValue : i;
+                    })
+                .ToList();
+
+            BuildTimelineLookup();
         }
         catch (Exception ex)
         {
             Snackbar.Add($"Failed to load timeline data: {ex.Message}", Severity.Error);
         }
-    } 
+    }
 
-    private void BuildLookup()
+    private void BuildTimelineLookup()
     {
-        _byTime = _timeline!.Series
+        _pointsByTime = _timeline!.Series
             .SelectMany(s => s.Points.Select(p => new { s.Name, Point = p }))
             .GroupBy(x => x.Point.Time)
             .ToDictionary(
@@ -153,19 +104,8 @@
             );
     }
 
-    private IEnumerable<TimelineSeries> OrderedSeries()
-    {
-        if (_timeline?.Series is null) return Enumerable.Empty<TimelineSeries>();
-
-        return _timeline.Series.OrderBy(s =>
-        {
-            var i = Array.IndexOf(SeriesOrder, s.Name);
-            return i == -1 ? int.MaxValue : i;
-        });
-    }
-
-    private TimelinePoint? At(DateTime t, string seriesName)
-        => _byTime.TryGetValue(t, out var m) && m.TryGetValue(seriesName, out var p) ? p : null;
+    private bool HasData()
+        => _timeline?.Series.SelectMany(s => s.Points).Any(p => (p.Value ?? 0) != 0) == true;
 
     private static SeriesType MapSeriesType(TimelineSeriesType t) => t switch
     {
@@ -175,8 +115,8 @@
         TimelineSeriesType.Bar => SeriesType.Bar,
         _ => SeriesType.Line
     };
-
     
-
-    private bool HasData() => _timeline?.Series.SelectMany(s => s.Points).Any(p => (p.Value ?? 0) != 0) == true;
+    //TODO Rethink this - passing too much or too little to the tooltip, maybe just pass the point and series and let it figure out what to show?
+    private TimelinePoint? GetPoint(DateTime t, string seriesName)
+        => _pointsByTime.TryGetValue(t, out var m) && m.TryGetValue(seriesName, out var p) ? p : null;
 }
