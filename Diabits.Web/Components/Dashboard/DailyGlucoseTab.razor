@@ -111,7 +111,7 @@
 public DateTime? SelectedDate { get; set; }
 
 [Parameter]
-public bool IsActive { get; set; }
+public bool IsActiveTab { get; set; }
 
 private bool _isLoading;
     private DailyGlucoseResponse? _data;
@@ -137,7 +137,7 @@ private bool _isLoading;
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!IsActive || !SelectedDate.HasValue) return;
+        if (!IsActiveTab || !SelectedDate.HasValue) return;
 
         var d = SelectedDate.Value.Date;
         if (_lastLoadedDate == d) return;

@@ -1,0 +1,88 @@
+﻿@using Diabits.Web.Models
+
+<MudPaper Elevation="0" Class="pa-3" Style="min-width: 190px;">
+    <MudText Typo="Typo.subtitle2"
+             Class="mb-2 pb-2"
+             Style="font-weight:600; border-bottom: 1px solid var(--mud-palette-lines-default);">
+        @Time.ToString("HH:mm")
+    </MudText>
+
+    <MudStack Spacing="1">
+        @foreach (var row in VisibleRows)
+        {
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      Justify="Justify.SpaceBetween">
+
+                <MudStack Row="true"
+                          AlignItems="AlignItems.Center"
+                          Spacing="1">
+
+                    <span style="
+                        width:10px;
+                        height:10px;
+                        border-radius:999px;
+                        background:@GetSeriesColor(row.Series.Name);
+                        display:inline-block;
+                        box-shadow: 0 0 0 1px var(--mud-palette-lines-default) inset;">
+                    </span>
+
+                    <MudText Typo="Typo.body2" Style="font-weight:600">
+                        @row.Series.Name
+                    </MudText>
+                </MudStack>
+
+                <MudText Typo="Typo.body2">
+                    @(row.Point?.Name ?? "Active")
+                </MudText>
+            </MudStack>
+        }
+    </MudStack>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public required DateTime Time { get; set; }
+
+    [Parameter]
+    public required List<TimelineSeries> Series { get; set; }
+
+    [Parameter]
+    public required Func<DateTime, string, TimelinePoint?> GetPoint { get; set; }
+
+    private IEnumerable<TooltipRow> VisibleRows 
+        => Series.Select(CreateRow).Where(ShouldShowRow);
+
+    private TooltipRow CreateRow(TimelineSeries series)
+        => new TooltipRow(series, GetPoint(Time, series.Name));
+
+    private static bool ShouldShowRow(TooltipRow row)
+    {
+        return row.Series.Type is TimelineSeriesType.Line or TimelineSeriesType.Scatter or TimelineSeriesType.Bar
+                ? HasValue(row.Point)
+                : IsActive(row.Point);
+    }
+
+    private static bool HasValue(TimelinePoint? point) 
+        => point?.Value is not null;
+
+    private static bool IsActive(TimelinePoint? point) 
+        => (point?.Value ?? 0) > 0;
+
+    private string GetSeriesColor(string seriesName)
+    {
+        return seriesName switch
+        {
+            "Menstruation" => "#9da4a8",
+            "Sleep" => "#91B3C9",
+            "Workout" => "#D4C9D8",
+            "Heart Rate" => "#e27396",
+            "Medication" => "#47565f",
+            "Insulin Bolus" => "#670000",
+            "Glucose Level" => "#AC0000",
+            _ => "var(--mud-palette-text-secondary)"
+        };
+    }
+
+    private record TooltipRow(TimelineSeries Series, TimelinePoint? Point);
+}
